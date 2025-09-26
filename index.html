@@ -1,0 +1,225 @@
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>powerpoit ripoff</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    </head>
+
+    <body>
+        <div id="loading">
+            im loading
+        </div>
+        <toolbar>
+            <img src="assets/icon.svg" alt="" id="icon">
+            <div id="toolbarstuff">
+                <div contenteditable="true" id="title">please name me lord</div>
+                <div id="toolbar">
+                    <div class="toolbar-option"> File </div>
+                    <!-- <div class="toolbar-option"> Edit </div>
+                    <div class="toolbar-option"> View </div> -->
+                    <div class="toolbar-option"> Insert </div>
+                    <!-- <div class="toolbar-option"> Format </div>
+                    <div class="toolbar-option"> Slide </div>
+                    <div class="toolbar-option"> Arrange </div>
+                    <div class="toolbar-option"> Info </div> -->
+                    </div>
+            </div>
+            </toolbar>
+        <editor>
+        </editor>
+
+        <script>
+            const title = document.getElementById('title')
+            const editor = document.getElementsByTagName('editor')[0]
+            let shapes = {}
+            let id = 0
+            let mouse = {}
+            let selected = null
+            let selectedID = -1
+            let dropdownselection = ''
+            let dropdownMenus = {
+                insert: ['box', 'circle', 'poop'],
+                file: ['new', 'load', 'save']
+            }
+            title.addEventListener('blur', (e) => {
+                if(title.textContent == '') {
+                    title.textContent = 'Unnamed Thingie'
+                }
+                document.title = title.textContent + " - powerpoop "
+            })
+            title.addEventListener('keydown', (e) => {
+                if(e.keyCode == 13) {
+                    title.blur()
+                }
+            })
+            const toolbar_el = document.getElementsByClassName('toolbar-option')
+            for(let i = 0; i < toolbar_el.length; i++) {
+                toolbar_el[i].addEventListener('click', (e) => {
+                    toolbarClick(toolbar_el[i].textContent)
+                    if(toolbar_el[i].textContent.includes('Insert')) {
+                    }
+                })
+            }
+
+            function updateProperties() {
+
+            }
+
+            function toolbarClick(option) {
+                const sel = option.trim().toLowerCase()
+                    rightClickMenu(dropdownMenus[sel])   
+            }
+
+            function insert(type) {
+                if(type == 'box') {
+                    const el = document.createElement('div')
+                    el.className = 'box'
+                    el.contentEditable = true
+                    el.id = `editor-${id}`
+                    let thisID = id
+                    updateData(id, el)
+                    el.addEventListener('mousedown', (e) => {
+                        if(selected) {
+                            selected = null
+                            selected.classList.remove('selected')
+                        }
+                        selected = el
+                        selectedID = thisID
+                        dragging = el
+                        console.log(selected)
+                        el.classList.add('selected')
+                    })
+                    el.addEventListener('mouseup', (e) => {
+                        dragging = null
+                        console.log(selected)
+                    })
+                    editor.appendChild(el)
+                    id++
+                }
+            }
+
+            addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX
+                mouse.y = e.clientY
+                if(dragging) {
+                    dragging.style.left = mouse.x +'px'
+                    dragging.style.top = mouse.y +'px'
+                    updateData(selectedID, dragging)
+                }
+            })
+
+            let randomTitles = [
+                'OH MY LORD',
+                'may I be named good sir?',
+                'my name is nameless',
+                "i'm hungry, hi hungry im dad",
+                'literally nothing',
+                'AND HIS NAME IS...',
+                'dont forget to name me',
+                'nameless sadly',
+                "I'd like a name",
+                "hello? aren't you forgetting something?",
+                'powerpoint ripoff'
+            ]
+            title.textContent = randomTitles[Math.floor(random(0, randomTitles.length))]
+
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            function rightClickMenu() {
+                const dropdown = document.createElement('div')
+                dropdown.className = 'right-click-menu'
+                for(let i = 0; i < options.length; i++) {
+                    const el = document.createElement(div)
+                }
+            }
+
+            function rightClickMenu(options) {
+                const dropdown = document.createElement('div')
+                dropdown.className = 'dropdown'
+                dropdown.style.left = mouse.x
+                dropdown.style.top = mouse.y
+                for(let i = 0; i < options.length; i++) {
+                    const item = document.createElement('div')
+                    item.textContent = options[i]
+                    item.className = 'dropdown-item'
+                    dropdown.appendChild(item)
+                    if(Math.floor(i/2) == i/2) {
+                        item.style.backgroundColor = '#313131'
+                    } else {
+                        item.style.backgroundColor = '#363636'
+                    }
+                    item.addEventListener('click', () => {
+                        dropdownselection = item.textContent
+                        dropdownAction(0, dropdownselection)
+                        dropdown.remove()
+                    })
+                }
+                document.body.appendChild(dropdown)
+            }
+
+            // document.getElementsByTagName('editor')[0].addEventListener('click', (e) => {
+            //     console.log(e.which)
+            // })
+
+            document.addEventListener('contextmenu', event => {
+            event.preventDefault();
+            rightClickMenu(['insert'])
+            })
+
+            function dropdownAction(id, selection) {
+                subMenus = ['insert', 'file']
+                if(subMenus.includes(selection)) {
+                    rightClickMenu(dropdownMenus[selection])
+                } else if(selection == 'box') {
+                    insert('box')
+                } else if(selection == 'new') {
+                    if(shapes) {
+                        if(confirm('u sure u wanna throw that all away?')) {
+                            shapes = {}
+                            editor.innerHTML = ''
+                        }
+                    }
+                } else if(selection == 'save') {
+                        alert(`
+                        copy paste this to ur clipboard:
+                                                ` + JSON.stringify(shapes)
+                        )
+                }
+                
+            }
+
+            function updateData(id, el) {
+                const me = el.getBoundingClientRect();
+                shapes[id] = {
+                    x: me.left, y: me.top, d: 0, w: me.width, h: me.height,
+                    editable: false, type: 'box'
+                }
+            }
+
+            function loadProject(json) {
+                shapes = JSON.parse(json)
+                const count = Object.keys(shapes)
+                for(let i = 0; i < count; i++) {
+                    insert(json[i].type)
+                }
+            }
+
+            // loadProject(prompt('enter shitta'))
+
+            editor.addEventListener('click', (e) => {
+                if(e.currentTarget === e.target) {
+                        selected.classList.remove('selected')
+                    selected = null
+                    selectedID = -1
+                }
+            })
+
+        </script>
+    </body>
+
+    <script>
+        document.getElementById('loading').remove()
+    </script>
