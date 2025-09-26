@@ -16,6 +16,7 @@ editor {
 
 editor * {
     position: absolute;
+    overflow: hidden;
 }
 
 toolbar {

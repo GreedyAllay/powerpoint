@@ -10,6 +10,7 @@
         <div id="loading">
             im loading
             <noscript>
+                <br><br>
             See, the thing here is, turning off your javascript is kind of a stupid thing. Do you REALLY think
             the creators of javascript couldn't make pages safe?
             </noscript>
@@ -104,7 +105,6 @@
                     updateData(id, el)
                     el.addEventListener('mousedown', (e) => {
                         if(selected) {
-                            selected = null
                             selected.classList.remove('selected')
                         }
                         const me = el.getBoundingClientRect()
@@ -164,6 +164,10 @@
             }
 
             function rightClickMenu(options) {
+                const oldDropdown = document.getElementsByClassName('dropdown')[0]
+                if(oldDropdown) {
+                    oldDropdown.remove()
+                }
                 const dropdown = document.createElement('div')
                 dropdown.className = 'dropdown'
                 dropdown.style.left = mouse.x
@@ -193,7 +197,13 @@
 
             document.addEventListener('contextmenu', event => {
             event.preventDefault();
-            rightClickMenu(['insert'])
+            console.log(selected)
+            if(selected) {
+                rightClickMenu(['layout'])
+            } else {
+                rightClickMenu(['insert'])
+            }
+            
             })
 
             function dropdownAction(id, selection) {
@@ -228,6 +238,8 @@
                     })
                     document.body.appendChild(picker)
                     picker.click()
+                } else if(selection == 'layout') {
+                    rightClickMenu(dropdownMenus['layout'])
                 }
                 
             }
@@ -260,10 +272,13 @@
 
             editor.addEventListener('click', (e) => {
                 if(e.currentTarget === e.target) {
+                    if(selected) {
                         selected.classList.remove('selected')
+                    }
                     selected = null
                     selectedID = -1
                 }
+                document.getElementsByClassName('dropdown')[0].remove()
             })
 
         </script>
