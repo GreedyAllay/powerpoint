@@ -19,6 +19,7 @@
                     <!-- <div class="toolbar-option"> Edit </div>
                     <div class="toolbar-option"> View </div> -->
                     <div class="toolbar-option"> Insert </div>
+                    <div class="toolbar-option"> Layout </div>
                     <!-- <div class="toolbar-option"> Format </div>
                     <div class="toolbar-option"> Slide </div>
                     <div class="toolbar-option"> Arrange </div>
@@ -36,11 +37,14 @@
             let id = 0
             let mouse = {}
             let selected = null
+            let dragging = null
             let selectedID = -1
+            let offset = {}
             let dropdownselection = ''
             let dropdownMenus = {
                 insert: ['box', 'circle', 'poop'],
-                file: ['new', 'load', 'save']
+                file: ['new', 'load', 'save'],
+                layout: ['background color', 'border color', 'text color']
             }
             title.addEventListener('blur', (e) => {
                 if(title.textContent == '') {
@@ -75,7 +79,7 @@
                 if(type == 'box') {
                     const el = document.createElement('div')
                     el.className = 'box'
-                    el.contentEditable = true
+                    el.contentEditable = false
                     el.id = `editor-${id}`
                     let thisID = id
                     updateData(id, el)
@@ -84,10 +88,14 @@
                             selected = null
                             selected.classList.remove('selected')
                         }
+                        const me = el.getBoundingClientRect()
+                        offset.x = e.clientX - me.left
+                        offset.y = e.clientY - me.top
                         selected = el
                         selectedID = thisID
                         dragging = el
                         console.log(selected)
+
                         el.classList.add('selected')
                     })
                     el.addEventListener('mouseup', (e) => {
@@ -103,8 +111,8 @@
                 mouse.x = e.clientX
                 mouse.y = e.clientY
                 if(dragging) {
-                    dragging.style.left = mouse.x +'px'
-                    dragging.style.top = mouse.y +'px'
+                    dragging.style.left = mouse.x - offset.x +'px'
+                    dragging.style.top = mouse.y - offset.y + 'px'
                     updateData(selectedID, dragging)
                 }
             })
@@ -187,6 +195,20 @@
                         copy paste this to ur clipboard:
                                                 ` + JSON.stringify(shapes)
                         )
+                } else if(selection == 'background color') {
+                    const picker = document.createElement('input')
+                    picker.type = 'color'
+                    picker.style.position = 'absolute'
+                    picker.style.left = mouse.x
+                    picker.style.left = mouse.y
+                    picker.addEventListener('change', (e) => {
+                        console.log(picker.value)
+                        if(selected) {
+                            selected.style.backgroundColor = picker.value
+                        }
+                    })
+                    document.body.appendChild(picker)
+                    picker.click()
                 }
                 
             }
@@ -195,8 +217,16 @@
                 const me = el.getBoundingClientRect();
                 shapes[id] = {
                     x: me.left, y: me.top, d: 0, w: me.width, h: me.height,
-                    editable: false, type: 'box'
+                    editable: false, type: 'box', color: me.backgroundColor,
+                    border: me.borderColor,
                 }
+            }
+
+            function setData(id) {
+                const el = document.getElementById(`editor-${id}`)
+                const data = shapes[id]
+                console.log(data)
+                el.style.backgroundColor = data.color
             }
 
             function loadProject(json) {
