@@ -9,6 +9,11 @@
     <body>
         <div id="loading">
             im loading
+            <noscript>
+            See, the thing here is, turning off your javascript is kind of a stupid thing. Do you REALLY think
+            the creators of javascript couldn't make pages safe?
+            </noscript>
+
         </div>
         <toolbar>
             <img src="assets/icon.svg" alt="" id="icon">
@@ -69,6 +74,20 @@
             function updateProperties() {
 
             }
+
+            document.getElementById('icon').addEventListener('click', (e) => {
+                if(prompt('What did you expect? No, seriously, tell me. (this has an easter egg!!!)') == 'cat') {
+                    const audio = new Audio()
+                    const song = fetch('https://assets.cattiesworld.nl/music/glyde-latte.mp3')
+                    .then(res => res.blob())
+                    .then((songie) => {
+                        const objectURL = URL.createObjectURL(songie);
+                        audio.src = objectURL
+                        audio.play()
+                    })
+                    
+                }
+            })
 
             function toolbarClick(option) {
                 const sel = option.trim().toLowerCase()
